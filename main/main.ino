@@ -22,17 +22,12 @@ void setup() {
 
   internetConnection();
 
-  Serial.println("Connected to internet");
-
-  if (client.connect("192.168.100.10", 3000)) {
-    Serial.println("Connected to server");
+  if (client.connect("192.168.233.83", 3000)) {
     // Covierte le json y lo envia a la servidor
     serializeJson(msg, content);
     char charBuf[256];
     content.toCharArray(charBuf, 256);
     client.write(charBuf);
-
-    Serial.println(charBuf);
     
     // Obtiene el string  Json
     String fin = "";
@@ -45,13 +40,11 @@ void setup() {
     //Deserializa el string json y lo permte deja usable
     deserializeJson(config, fin);
     String name = config["device_name"];
-    Serial.print(name);
-
+    
   }
 
   client.stop();
 
-  Serial.println("end");
   serverTest();
 }
 
@@ -93,7 +86,7 @@ void config_print(){
 
 void internetConnection() {
   while(status != WL_CONNECTED) {
-    status = WiFi.begin("Totalplay-2.4G-f030", "32W6W96ptV8mPK2P");
+    status = WiFi.begin("Steven", "12345678");
     
     delay(1000);
 	}
@@ -109,16 +102,11 @@ void serverTest(){
 
     int err = 0;
     if (config["servers"][i]["type"] == "http"){
-      //String t = config["servers"][i]["type"];
-      //String n = config["servers"][i]["name"];
-      //Serial.print(t);
-      //Serial.print("://");
-      //Serial.println(n);
-      Serial.print("Server: ");
-      Serial.println(i);
+      
+      
       for (int j = 1; j <= 5; j++) {
         err = http.get(config["servers"][i]["name"], config["servers"][i]["endpoint"]);
-        Serial.println(i);
+       
         int severStatus = http.responseStatusCode();
         if (severStatus > 0 && severStatus < 500) {
           break;
@@ -127,23 +115,19 @@ void serverTest(){
         //delay(2000); 
         if (j == 5){
           String serverName = config["servers"][i]["name"];
-            Serial.println("a");
-          if (client.connect("192.168.100.10", 3000)) {
-            Serial.print("Error en ");
-            Serial.println(serverName);
+            
+          if (client.connect("192.168.233.83", 3000)) {
+
             String errContent = "";
             delay(2000);
             msg["server"] = serverName;
             msg["action"] = "report";
-            Serial.println("a");
             serializeJson(msg, errContent);
             char charBuf[256];
             errContent.toCharArray(charBuf, 256);
             client.write(charBuf);
-            Serial.println(charBuf);
           }
           client.stop();
-          Serial.println(serverName);
         }
       }
       
@@ -158,10 +142,8 @@ void serverTest(){
         //delay(2000);
         if (j==5){
           String serverName = config["servers"][i]["name"];
-          if (client.connect("192.168.100.10", 3000)) {
+          if (client.connect("192.168.233.83", 3000)) {
            
-            Serial.print("Error en ");
-            Serial.println(serverName);
             String errContent = "";
             delay(2000);
             msg["action"] = "report";
@@ -170,11 +152,8 @@ void serverTest(){
             char charBuf[256];
             errContent.toCharArray(charBuf, 256);
             client.write(charBuf);
-            Serial.println(charBuf);
           }
           client.stop();
-          
-          
         }
       }
     }
